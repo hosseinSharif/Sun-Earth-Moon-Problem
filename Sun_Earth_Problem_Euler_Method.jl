@@ -1,8 +1,18 @@
+# In The Name of Allah
+
+#= Sun-Earth Problem:
+    Solving The Differential Equation of Earth Displacement And Velocity Vector 
+=#
+
+#= Note!
+    In genral we can say that any other system of two masses with mass of the one
+    of them very greater than the other, will go this way! =#
+
 closeall
 
 using Plots
 
-dt = 0.001
+dt = 0.01
 t = 0:dt:748.5
 G = 0.01
 M_S = 0.1
