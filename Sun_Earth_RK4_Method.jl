@@ -8,8 +8,6 @@
     In genral we can say that any other system of two masses with mass of the one
     of them very greater than the other, will go this way! =#
 
-    closeall
-
     using Plots
     
     dt = 0.01
