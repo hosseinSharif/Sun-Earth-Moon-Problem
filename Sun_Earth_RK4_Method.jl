@@ -37,8 +37,18 @@ function f(x_var)
 end
 
 # Initialize System:
-dt = 100
-t = 0:dt:50000
+Day_Hours = 23 + (56 / 60) + (4 / 3600); # Hours of A Day
+Year_Days = 365.2425; # Days of 
+Year_Seconds = Year_Days * Day_Hours * 3600;
+
+dD = 5; # Simulation Step In Days
+Stop_Year = 10; # The year that the simulation will stop.
+
+dY = dD / 365.2425; # Simulation  Step In Years
+Δt = dY * Year_Seconds; # In Seconds
+
+Year = 0:dY:Stop_Year; # In Years
+Δt = dY * Year_Seconds; # In Seconds
 
 xE0 = -AU;
 yE0 = 0;
@@ -48,15 +58,15 @@ VxE0 = 0;
 VyE0 = -V0;
 VzE0 = 0;
 
-x = zeros(6, length(t));
+x = zeros(6, length(Year));
 x[:, 1] = [xE0 yE0 zE0 VxE0 VyE0 VzE0]';
 
 # Integrating With RK4:
-for i = 1:(length(t)-1)
-    k1 = dt .* f(x[:, i])
-    k2 = dt .* f(x[:, i] + k1 ./ 2)
-    k3 = dt .* f(x[:, i] + k2 ./ 2)
-    k4 = dt .* f(x[:, i] + k3)
+for i = 1:(length(Year)-1)
+    k1 = Δt .* f(x[:, i])
+    k2 = Δt .* f(x[:, i] + k1 ./ 2)
+    k3 = Δt .* f(x[:, i] + k2 ./ 2)
+    k4 = Δt .* f(x[:, i] + k3)
 
     x[:, i+1] = x[:, i] + (k1 .+ 2 * k2 .+ 2 * k3 .+ k4) ./ 6
 
