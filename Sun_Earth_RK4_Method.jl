@@ -1,4 +1,7 @@
 # In The Name of Allah
+# In Persuit of The Moon Project
+# Hossein Sharif 1401/11/28 14:00
+# Location: Islamic Republic of Iran - Tehran
 
 #= Sun-Earth Problem:
     Solving The Differential Equation of Earth Displacement And Velocity Vector 
@@ -6,25 +9,29 @@
 =#
 
 #= Note!
-    In genral we can say that any other system of two masses with mass of the one
+    In genral, we can say that any other system of two masses with mass of the one
     of them very greater than the other, will go this way! =#
 
-using Plots
-
-# Variables And Prameters Zeroings
-
+using Plots, Plots.Measures
 
 # Constants: (SI Units)
-const G = 6.6743e-11; # m^3kg^-1s^-2
-const M_S = 1.989e30; # kg
-const AU = 149597870700; # 1.5e11
-const V0 = (G * M_S / AU)^0.5; #SI
+const G = 6.6743e-11; # Gravitational Constant (m^3kg^-1s^-2)
+const M_S = 1.989e30; # The Mass of The Sun (kg)
+const AU = 149597870700; # Mean Distance Between The Sun And The Earth (m)
+
+## Linear Velocity of The Earth In Orbit Around The Sun:
+# This equation can be proved with the help of polar
+# coordinates and two assumptions:
+# 1- r is constant in orbital motion (r = AU)
+# 2- Theta_Dot is constant in orbital motuon (Theta_Dot = cte.)
+const V0 = (G * M_S / AU)^0.5;
 
 # State-Space Matrix Calculation Function:
 function f(x_var)
     Alpha = 1 / ((x_var[1]^2 + x_var[2]^2 + x_var[3]^2)^(3 / 2))
     Beta_var = -G * M_S * Alpha
 
+    # Stat-Space Matrix
     A = [0 0 0 1 0 0
         0 0 0 0 1 0
         0 0 0 0 0 1
@@ -42,7 +49,7 @@ Year_Days = 365.2425; # Days of
 Year_Seconds = Year_Days * Day_Hours * 3600;
 
 dD = 5; # Simulation Step In Days
-Stop_Year = 10; # The year that the simulation will stop.
+Stop_Year = 3; # The year that the simulation will stop.
 
 dY = dD / 365.2425; # Simulation  Step In Years
 Δt = dY * Year_Seconds; # In Seconds
