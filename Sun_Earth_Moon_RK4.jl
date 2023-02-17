@@ -24,6 +24,8 @@ const AU = 149597870700; # Mean Distance Between The Sun And The Earth (m)
 
 const SEMD = AU; # Sun-Earth Mean Distance = 149597870.700 Km
 const EMMD = AU / 391.1055443137255; # Earth-Moon Mean Distance = 382,500 Km
+const M_i = 5.15; # The Moon moves in an approximately elliptic orbit inclined 
+# at about five degrees to the plane of the ecliptic. (In Degrees)
 
 ## Linear Velocity of The Earth In Orbit Around The Sun:
 # This equation can be proved with the help of polar
@@ -31,18 +33,27 @@ const EMMD = AU / 391.1055443137255; # Earth-Moon Mean Distance = 382,500 Km
 # 1- r is constant in orbital motion (r = AU)
 # 2- Theta_Dot is constant in orbital motuon (Theta_Dot = cte.)
 const V_E0 = (G * M_S / SEMD)^0.5; # Earth Initial Velocity
-const V_M0 = (G * M_M / EMMD)^0.5; # Moon Initial Velocity
+const V_M0 = (G * M_E / EMMD)^0.5; # Moon Initial Velocity
 
 # State-Space Matrix Calculation Function:
 function f(x_var)
-    Alpha = 1 / ((x_var[1]^2 + x_var[2]^2 + x_var[3]^2)^(3 / 2))
-    Beta_var = -G * M_S * Alpha
+    D1 = 1 / ((x_var[1]^2 + x_var[2]^2 + x_var[3]^2)^(3 / 2))
+    D2 =
+        D3 =
+            A1 = (G * M_E) /
+                 Beta_var = -G * M_S * Alpha
+
+    Z1 = B1 - A1
+    Z2 = B2 - A2
 
     # Stat-Space Matrix
-    A = [0 0 0 1 0 0
-        0 0 0 0 1 0
-        0 0 0 0 0 1
-        Beta_var 0 0 0 0 0
+    A = [0 0 0 0 0 0 1 0 0 0 0 0
+        0 0 0 0 0 0 0 1 0 0 0 0
+        0 0 0 0 0 0 0 0 1 0 0 0
+        0 0 0 0 0 0 0 0 0 1 0 0
+        0 0 0 0 0 0 0 0 0 0 1 0
+        0 0 0 0 0 0 0 0 0 0 0 1
+        Beta 0 0 0 0 0
         0 Beta_var 0 0 0 0
         0 0 Beta_var 0 0 0]
 
@@ -56,7 +67,7 @@ Year_Days = 365.2425; # Days of
 Year_Seconds = Year_Days * Day_Hours * 3600;
 
 dD = 5; # Simulation Step In Days
-Stop_Year = 3; # The year that the simulation will stop.
+Stop_Year = 1; # The year that the simulation will stop.
 
 dY = dD / 365.2425; # Simulation  Step In Years
 Δt = dY * Year_Seconds; # In Seconds
@@ -64,16 +75,22 @@ dY = dD / 365.2425; # Simulation  Step In Years
 Year = 0:dY:Stop_Year; # In Years
 Δt = dY * Year_Seconds; # In Seconds
 
+xM0 = -AU - (SEMD + EMMD * cosd(M_i));
+yM0 = EMMD * sind(M_i);
+zM0 = 0;
+VxM0 = 0;
+VyM0 = -V_M0;
+VzM0 = 0;
+
 xE0 = -AU;
 yE0 = 0;
 zE0 = 0;
-
 VxE0 = 0;
-VyE0 = -V0;
+VyE0 = -V_E0;
 VzE0 = 0;
 
-x = zeros(6, length(Year));
-x[:, 1] = [xE0 yE0 zE0 VxE0 VyE0 VzE0]';
+x = zeros(12, length(Year));
+x[:, 1] = [xM0 yM0 zM0 xE0 yE0 zE0 VxM0 VyM0 VzM0 VxE0 VyE0 VzE0]';
 
 # Integrating With RK4:
 for i = 1:(length(Year)-1)
