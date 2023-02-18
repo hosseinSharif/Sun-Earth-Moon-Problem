@@ -37,11 +37,14 @@ const V_M0 = (G * M_E / EMMD)^0.5; # Moon Initial Velocity
 
 # State-Space Matrix Calculation Function:
 function f(x_var)
-    D1 = 1 / ((x_var[1]^2 + x_var[2]^2 + x_var[3]^2)^(3 / 2))
-    D2 =
-        D3 =
-            A1 = (G * M_E) /
-                 Beta_var = -G * M_S * Alpha
+    D_A1_A2 = 1 / (((x_var[1] - x_var[4])^2 + (x_var[2] - x_var[5])^2 + (x_var[3] - x_var[6])^2)^(3 / 2))
+    D_B1 = 1 / ((x_var[1]^2 + x_var[2]^2 + x_var[3]^2)^(3 / 2)) # Inverse of The Distance of The Moon
+    D_B2 = 1 / ((x_var[4]^2 + x_var[5]^2 + x_var[6]^2)^(3 / 2)) # Inverse of The Distance of The Earth
+
+    A1 = (G * M_E) / D_A1_A2
+    A2 = (G * M_M) / D_A1_A2
+    B1 = (G * M_S) / D_B1
+    B2 = (G * M_S) / D_B2
 
     Z1 = B1 - A1
     Z2 = B2 - A2
@@ -53,12 +56,15 @@ function f(x_var)
         0 0 0 0 0 0 0 0 0 1 0 0
         0 0 0 0 0 0 0 0 0 0 1 0
         0 0 0 0 0 0 0 0 0 0 0 1
-        Beta 0 0 0 0 0
-        0 Beta_var 0 0 0 0
-        0 0 Beta_var 0 0 0]
+        Z1 0 0 A1 0 0 0 0 0 0 0 0
+        0 Z1 0 0 A1 0 0 0 0 0 0 0
+        0 0 Z1 0 0 A1 0 0 0 0 0 0
+        A2 0 0 Z2 0 0 0 0 0 0 0 0
+        0 A2 0 0 Z2 0 0 0 0 0 0 0
+        0 0 A2 0 0 Z2 0 0 0 0 0 0]
 
-    B = A * x_var
-    return B
+    f_x = A * x_var
+    return f_x
 end
 
 # Initialize System:
@@ -105,4 +111,4 @@ end
 
 plotlyjs()
 
-plot(x[1, :], x[2, :])
+plot(x[4, :], x[5, :])
