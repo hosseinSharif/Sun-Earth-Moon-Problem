@@ -23,7 +23,7 @@ const G = 6.6743e-11; # Gravitational Constant (m^3kg^-1s^-2)
 const AU = 149597870700; # Mean Distance Between The Sun And The Earth (m)
 
 const SEMD = AU; # Sun-Earth Mean Distance = 149597870.700 Km
-const EMMD = AU / 391.1055443137255; # Earth-Moon Mean Distance = 382,500 Km
+const EMMD = SEMD / 391.1055443137255; # Earth-Moon Mean Distance = 382,500 Km
 const M_i = 5.15; # The Moon moves in an approximately elliptic orbit inclined 
 # at about five degrees to the plane of the ecliptic. (In Degrees)
 
@@ -37,9 +37,9 @@ const V_M0 = (G * M_E / EMMD)^0.5 + V_E0 # Moon Initial Velocity
 
 # State-Space Matrix Calculation Function:
 function f(x_var)
-    D_A1_A2 = 1 / (((x_var[1] - x_var[4])^2 + (x_var[2] - x_var[5])^2 + (x_var[3] - x_var[6])^2)^(3 / 2))
-    D_B1 = 1 / ((x_var[1]^2 + x_var[2]^2 + x_var[3]^2)^(3 / 2)) # Inverse of The Distance of The Moon
-    D_B2 = 1 / ((x_var[4]^2 + x_var[5]^2 + x_var[6]^2)^(3 / 2)) # Inverse of The Distance of The Earth
+    D_A1_A2 = (((x_var[1] - x_var[4])^2 + (x_var[2] - x_var[5])^2 + (x_var[3] - x_var[6])^2)^(3 / 2))
+    D_B1 = ((x_var[1]^2 + x_var[2]^2 + x_var[3]^2)^(3 / 2)) # Inverse of The Distance of The Moon
+    D_B2 = ((x_var[4]^2 + x_var[5]^2 + x_var[6]^2)^(3 / 2)) # Inverse of The Distance of The Earth
 
     A1 = (G * M_E) / D_A1_A2
     A2 = (G * M_M) / D_A1_A2
@@ -72,7 +72,7 @@ Day_Hours = 23 + (56 / 60) + (4 / 3600); # Hours of A Day
 Year_Days = 365.2425; # Days of 
 Year_Seconds = Year_Days * Day_Hours * 3600;
 
-dD = 0.01; # Simulation Step In Days
+dD = 0.1; # Simulation Step In Days
 Stop_Year = 0.08; # The year that the simulation will stop.
 
 dY = dD / 365.2425; # Simulation  Step In Years
@@ -95,7 +95,7 @@ VyE0 = -V_E0;
 VzE0 = 0;
 
 x = zeros(12, length(Year));
-x[:, 1] = [xM0 yM0 zM0 xE0 yE0 zE0 VxM0 VyM0 VzM0 VxE0 VyE0 VzE0]'
+x[:, 1] = [xM0 yM0 zM0 xE0 yE0 zE0 VxM0 VyM0 VzM0 VxE0 VyE0 VzE0]';
 
 # Integrating With RK4:
 for i = 1:(length(Year)-1)
@@ -111,3 +111,4 @@ end
 plotlyjs()
 
 plot(x[4, :], x[5, :])
+
