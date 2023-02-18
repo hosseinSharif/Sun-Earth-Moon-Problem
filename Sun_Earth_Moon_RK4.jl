@@ -73,7 +73,7 @@ Year_Days = 365.2425; # Days of
 Year_Seconds = Year_Days * Day_Hours * 3600;
 
 dD = 0.1; # Simulation Step In Days
-Stop_Year = 0.08; # The year that the simulation will stop.
+Stop_Year = 1; # The year that the simulation will stop.
 
 dY = dD / 365.2425; # Simulation  Step In Years
 Δt = dY * Year_Seconds; # In Seconds
@@ -111,4 +111,5 @@ end
 plotlyjs()
 
 plot(x[4, :], x[5, :])
+plot!(x[1, :], x[2, :])
 
