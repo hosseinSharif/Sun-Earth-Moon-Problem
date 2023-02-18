@@ -12,7 +12,7 @@
     In genral, we can say that any other system of two masses with mass of the one
     of them very greater than the other, will go this way! =#
 
-using Plots, Plots.Measures
+using Plots
 
 # Constants: (SI Units)
 const M_S = 1.989e30; # The Mass of The Sun (Kg)
@@ -32,8 +32,8 @@ const M_i = 5.15; # The Moon moves in an approximately elliptic orbit inclined
 # coordinates and two assumptions:
 # 1- r is constant in orbital motion (r = AU)
 # 2- Theta_Dot is constant in orbital motuon (Theta_Dot = cte.)
-const V_E0 = (G * M_S / SEMD)^0.5; # Earth Initial Velocity
-const V_M0 = (G * M_E / EMMD)^0.5; # Moon Initial Velocity
+const V_E0 = (G * M_S / SEMD)^0.5 # Earth Initial Velocity
+const V_M0 = (G * M_E / EMMD)^0.5 + V_E0 # Moon Initial Velocity
 
 # State-Space Matrix Calculation Function:
 function f(x_var)
@@ -46,8 +46,8 @@ function f(x_var)
     B1 = (G * M_S) / D_B1
     B2 = (G * M_S) / D_B2
 
-    Z1 = B1 - A1
-    Z2 = B2 - A2
+    Z1 = -B1 - A1
+    Z2 = -B2 - A2
 
     # Stat-Space Matrix
     A = [0 0 0 0 0 0 1 0 0 0 0 0
@@ -72,23 +72,22 @@ Day_Hours = 23 + (56 / 60) + (4 / 3600); # Hours of A Day
 Year_Days = 365.2425; # Days of 
 Year_Seconds = Year_Days * Day_Hours * 3600;
 
-dD = 5; # Simulation Step In Days
-Stop_Year = 1; # The year that the simulation will stop.
+dD = 0.01; # Simulation Step In Days
+Stop_Year = 0.08; # The year that the simulation will stop.
 
 dY = dD / 365.2425; # Simulation  Step In Years
 Δt = dY * Year_Seconds; # In Seconds
 
 Year = 0:dY:Stop_Year; # In Years
-Δt = dY * Year_Seconds; # In Seconds
 
-xM0 = -AU - (SEMD + EMMD * cosd(M_i));
-yM0 = EMMD * sind(M_i);
-zM0 = 0;
+xM0 = -SEMD - (EMMD * cosd(M_i));
+yM0 = 0;
+zM0 = EMMD * sind(M_i);
 VxM0 = 0;
 VyM0 = -V_M0;
 VzM0 = 0;
 
-xE0 = -AU;
+xE0 = -SEMD;
 yE0 = 0;
 zE0 = 0;
 VxE0 = 0;
@@ -96,7 +95,7 @@ VyE0 = -V_E0;
 VzE0 = 0;
 
 x = zeros(12, length(Year));
-x[:, 1] = [xM0 yM0 zM0 xE0 yE0 zE0 VxM0 VyM0 VzM0 VxE0 VyE0 VzE0]';
+x[:, 1] = [xM0 yM0 zM0 xE0 yE0 zE0 VxM0 VyM0 VzM0 VxE0 VyE0 VzE0]'
 
 # Integrating With RK4:
 for i = 1:(length(Year)-1)
