@@ -12,6 +12,7 @@
     In genral, we can say that any other system of two masses with mass of the one
     of them very greater than the other, will go this way! =#
 
+using LinearAlgebra
 using Plots
 
 # Constants: (SI Units)
@@ -78,21 +79,23 @@ Stop_Year = 1; # The year that the simulation will stop.
 dY = dD / 365.2425; # Simulation  Step In Years
 Δt = dY * Year_Seconds; # In Seconds
 
-Year = 0:dY:Stop_Year; # In Years
+Year = zeros(1, length(0:dY:Stop_Year));
+Year[1,:] = 0:dY:Stop_Year; # In Years
 
-xM0 = -SEMD - (EMMD * cosd(M_i));
-yM0 = 0;
-zM0 = EMMD * sind(M_i);
-VxM0 = 0;
-VyM0 = -V_M0;
-VzM0 = 0;
+# JPL Horizons Initial Velocities of Moon And Earth (1401-01-01: Solar New Year)
+xM0 = -150614032638.7242;# -SEMD - (EMMD * cosd(M_i));
+yM0 = 1002563524.411460;# 0;
+zM0 = 41625742.77642026;# EMMD * sind(M_i);
+VxM0 = -112.8832840254308;# 0;
+VyM0 = -30808.89757527497;# -V_M0;
+VzM0 = -84.00881299342267;# 0;
 
-xE0 = -SEMD;
-yE0 = 0;
-zE0 = 0;
-VxE0 = 0;
-VyE0 = -V_E0;
-VzE0 = 0;
+xE0 = -150289457012.5996;# -SEMD;
+yE0 = 1186655852.197647;# 0;
+zE0 = 28135493.33878030;# 0;
+VxE0 = -652.1856667917787;# 0;
+VyE0 = -29906.06102741717;# -V_E0;
+VzE0 = 2.776852076703307;# 0;
 
 x = zeros(12, length(Year));
 x[:, 1] = [xM0 yM0 zM0 xE0 yE0 zE0 VxM0 VyM0 VzM0 VxE0 VyE0 VzE0]';
@@ -108,10 +111,28 @@ for i = 1:(length(Year)-1)
 
 end
 
+r_SM = x[1:3, :];
+v_SM = x[7:9, :];
+
+r_SE = x[4:6, :];
+v_SE = x[10:12, :];
+
+r_EM = r_SM - r_SE;
+v_EM = v_SM - v_SE;
+
+theta = zeros(1, length(Year));
+
+for i = 1:(length(Year))
+    theta[1, i] = acos(dot(r_SM[1:3, i], r_EM[1:3, i]) / (norm(r_SM[1:3, i]) * norm(r_EM[1:3, i])))
+end
+
 plotlyjs()
 
-plot(x[4, :], x[5, :])
-plot!(x[1, :], x[2, :])
+plot(r_SE[1, :], r_SE[2, :])
+# plot!(x[1, :], x[2, :])
+
+# plot(r_EM[1, :], r_EM[2, :])
+
+#plot(Year, theta)
 
 # TODO: Cakcukate Angle Between Earth-Moon And Sun-Moon Vectors And Plot it.
-# TODO: Calculate (or Find From JPL Horizons) Initial Velocities of Moon And Earth In The Begging of This Year (1401)
