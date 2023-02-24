@@ -73,14 +73,14 @@ Day_Hours = 23 + (56 / 60) + (4 / 3600); # Hours of A Day
 Year_Days = 365.2425; # Days of 
 Year_Seconds = Year_Days * Day_Hours * 3600;
 
-dD = 0.1; # Simulation Step In Days
+dD = 0.0006944445; # Simulation Step In Days
 Stop_Year = 1; # The year that the simulation will stop.
 
 dY = dD / 365.2425; # Simulation  Step In Years
 Δt = dY * Year_Seconds; # In Seconds
 
 Year = zeros(1, length(0:dY:Stop_Year));
-Year[1,:] = 0:dY:Stop_Year; # In Years
+Year[1, :] = 0:dY:Stop_Year; # In Years
 
 # JPL Horizons Initial Velocities of Moon And Earth (1401-01-01: Solar New Year)
 xM0 = -150614032638.7242;# -SEMD - (EMMD * cosd(M_i));
@@ -121,18 +121,20 @@ r_EM = r_SM - r_SE;
 v_EM = v_SM - v_SE;
 
 theta = zeros(1, length(Year));
+PML = zeros(1, length(Year));
 
 for i = 1:(length(Year))
-    theta[1, i] = acos(dot(r_SM[1:3, i], r_EM[1:3, i]) / (norm(r_SM[1:3, i]) * norm(r_EM[1:3, i])))
+    theta[1, i] = rad2deg(acos(dot(r_SM[1:3, i], r_EM[1:3, i]) / (norm(r_SM[1:3, i]) * norm(r_EM[1:3, i]))))
+    PML[1, i] = 0.5 * (1 - cosd(theta[1, i]))
 end
 
 plotlyjs()
 
-plot(r_SE[1, :], r_SE[2, :])
+#plot(r_SE[1, :], r_SE[2, :])
 # plot!(x[1, :], x[2, :])
 
 # plot(r_EM[1, :], r_EM[2, :])
+Year_MIN = zeros(1, length(Year));
+Year_MIN[1, :] = (Year_Days * Day_Hours * 60) .* Year[1, :];
 
-#plot(Year, theta)
-
-# TODO: Cakcukate Angle Between Earth-Moon And Sun-Moon Vectors And Plot it.
+plot(Year_MIN[1, :], 100 * PML[1, :])
